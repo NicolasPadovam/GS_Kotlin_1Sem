@@ -1,5 +1,4 @@
-
-package br.com.fiap.orbitwatch.screens
+package br.com.fiap.orbitwatch.screens.detalhes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,6 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -29,16 +29,12 @@ import java.util.*
 fun DetalhesScreen(
     eventoId: Int,
     onNavigateBack: () -> Unit,
-    viewModel: EventosViewModel = viewModel()
+    viewModel: EventosViewModel
 ) {
-    val eventos    by viewModel.eventos.collectAsStateWithLifecycle()
-    val evento     = eventos.find { it.id == eventoId }
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    // Lista local de notificações enviadas nesta sessão
-    var notificacoes by remember { mutableStateOf<List<String>>(emptyList()) }
+    val eventos      by viewModel.eventos.collectAsStateWithLifecycle()
+    val evento       = eventos.find { it.id == eventoId }
+    val snackbarHost = remember { SnackbarHostState() }
     var jaNotificado by remember { mutableStateOf(viewModel.isNotificado(eventoId)) }
-
 
     Scaffold(
         topBar = {
@@ -49,16 +45,19 @@ fun DetalhesScreen(
                 acaoIcone     = Icons.Default.Satellite
             )
         },
-        snackbarHost   = { SnackbarHost(snackbarHostState) },
-        containerColor = NasaBlack
+        snackbarHost   = { SnackbarHost(snackbarHost) },
+        containerColor = SpaceBlack
     ) { padding ->
 
         if (evento == null) {
             Box(
-                modifier         = Modifier.fillMaxSize().background(NasaBlack).padding(padding),
+                modifier         = Modifier
+                    .fillMaxSize()
+                    .background(SpaceBlack)
+                    .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Evento não encontrado", color = NasaSubtle)
+                Text("Evento não encontrado", color = TextGray)
             }
             return@Scaffold
         }
@@ -66,22 +65,23 @@ fun DetalhesScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(NasaBlack)
+                .background(SpaceBlack)
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Label de categoria
+
+            // Label
             Text(
                 text          = "EVENTO AMBIENTAL",
                 fontSize      = 10.sp,
                 fontWeight    = FontWeight.Bold,
-                color         = NasaBlue,
+                color         = LightBlue,
                 letterSpacing = 2.sp
             )
 
-            // Nome + chip de risco
+            // Nome + risco
             Row(
                 modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -91,7 +91,7 @@ fun DetalhesScreen(
                     text       = evento.nome,
                     fontSize   = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = NasaWhite,
+                    color      = TextWhite,
                     modifier   = Modifier.weight(1f),
                     lineHeight  = 30.sp
                 )
@@ -101,33 +101,31 @@ fun DetalhesScreen(
 
             // Localização
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.LocationOn, null, tint = NasaBlue, modifier = Modifier.size(14.dp))
+                Icon(Icons.Default.LocationOn, null, tint = LightBlue, modifier = Modifier.size(14.dp))
                 Spacer(modifier = Modifier.width(6.dp))
-                Text(evento.localizacao, fontSize = 13.sp, color = NasaSubtle)
+                Text(evento.localizacao, fontSize = 13.sp, color = TextGray)
             }
 
-            // Divisor
-            Box(Modifier.fillMaxWidth().height(1.dp).background(NasaCardGray))
+            HorizontalDivider(color = CardDark2)
 
-            // Seção: Dados Ambientais
-            NasaSectionTitle("DADOS AMBIENTAIS")
-            NasaDetalheItem(Icons.Default.Thermostat, "Temperatura", "${"%.1f".format(evento.temperatura)}°C")
-            NasaDetalheItem(Icons.Default.Description, "Descrição", evento.descricao)
-            NasaDetalheItem(Icons.Default.Warning, "Impacto", evento.impacto)
+            // Dados Ambientais
+            SecaoTitulo("DADOS AMBIENTAIS")
+            DetalheItem(Icons.Default.Thermostat,  "Temperatura", "${"%.1f".format(evento.temperatura)}°C")
+            DetalheItem(Icons.Default.Description, "Descrição",   evento.descricao)
+            DetalheItem(Icons.Default.Warning,     "Impacto",     evento.impacto)
 
-            Box(Modifier.fillMaxWidth().height(1.dp).background(NasaCardGray))
+            HorizontalDivider(color = CardDark2)
 
-            // Seção: Coordenadas
-            NasaSectionTitle("COORDENADAS")
-            NasaDetalheItem(Icons.Default.GpsFixed, "Posição GPS", evento.coordenadas)
-            NasaDetalheItem(Icons.Default.AccessTime, "Última Atualização", evento.ultimaAtualizacao)
+            // Coordenadas
+            SecaoTitulo("COORDENADAS")
+            DetalheItem(Icons.Default.GpsFixed,   "Posição GPS",        evento.coordenadas)
+            DetalheItem(Icons.Default.AccessTime, "Última Atualização", evento.ultimaAtualizacao)
 
-            Box(Modifier.fillMaxWidth().height(1.dp).background(NasaCardGray))
+            HorizontalDivider(color = CardDark2)
 
-            // Seção: Ação
-            NasaSectionTitle("AÇÃO")
+            // Ação
+            SecaoTitulo("AÇÃO")
 
-            // Botão principal: Enviar Notificação à Defesa Civil
             Button(
                 onClick = {
                     if (!jaNotificado) {
@@ -135,67 +133,30 @@ fun DetalhesScreen(
                         jaNotificado = true
                     }
                 },
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                enabled  = !jaNotificado,
-                colors   = ButtonDefaults.buttonColors(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                enabled = !jaNotificado,
+                colors  = ButtonDefaults.buttonColors(
                     containerColor         = if (jaNotificado) SafeGreen else CriticalRed,
                     disabledContainerColor = SafeGreen.copy(alpha = 0.8f)
                 ),
-                shape = RoundedCornerShape(4.dp)
+                shape = RoundedCornerShape(8.dp)
             ) {
                 Icon(
-                    if (jaNotificado) Icons.Default.CheckCircle else Icons.Default.NotificationAdd,
+                    imageVector        = if (jaNotificado) Icons.Default.CheckCircle
+                    else Icons.Default.NotificationAdd,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp)
+                    modifier           = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text          = if (jaNotificado) "NOTIFICAÇÃO ENVIADA" else "ENVIAR NOTIFICAÇÃO À DEFESA CIVIL",
-                    fontSize      = 12.sp,
-                    fontWeight    = FontWeight.Bold,
-                    letterSpacing = 0.5.sp
+                    text       = if (jaNotificado) "NOTIFICAÇÃO ENVIADA"
+                    else "ENVIAR NOTIFICAÇÃO À DEFESA CIVIL",
+                    fontSize   = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color      = TextWhite
                 )
-            }
-
-            // Lista de notificações enviadas (aparece apenas quando há itens)
-            if (notificacoes.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text          = "NOTIFICAÇÕES ENVIADAS",
-                    fontSize      = 10.sp,
-                    fontWeight    = FontWeight.Bold,
-                    color         = NasaBlue,
-                    letterSpacing = 2.sp
-                )
-
-                Surface(
-                    color  = NasaDarkGray,
-                    shape  = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier            = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        notificacoes.forEach { item ->
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    Icons.Default.CheckCircle,
-                                    contentDescription = null,
-                                    tint     = SafeGreen,
-                                    modifier = Modifier.size(14.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text     = item,
-                                    fontSize = 12.sp,
-                                    color    = NasaOffWhite
-                                )
-                            }
-                        }
-                    }
-                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -204,34 +165,36 @@ fun DetalhesScreen(
 }
 
 @Composable
-private fun NasaSectionTitle(titulo: String) {
+private fun SecaoTitulo(titulo: String) {
     Text(
         text          = titulo,
         fontSize      = 10.sp,
         fontWeight    = FontWeight.Bold,
-        color         = NasaBlue,
+        color         = LightBlue,
         letterSpacing = 2.sp
     )
 }
 
 @Composable
-private fun NasaDetalheItem(
+private fun DetalheItem(
     icone: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     valor: String
 ) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
-        Icon(icone, null, tint = NasaSubtle, modifier = Modifier.size(16.dp).padding(top = 2.dp))
+        Icon(icone, null, tint = TextGray, modifier = Modifier.size(16.dp).padding(top = 2.dp))
         Spacer(modifier = Modifier.width(10.dp))
         Column {
-            Text(label, fontSize = 10.sp, color = NasaSubtle, letterSpacing = 0.5.sp)
-            Text(valor, fontSize = 14.sp, color = NasaOffWhite, lineHeight = 20.sp)
+            Text(label, fontSize = 10.sp, color = TextGray, letterSpacing = 0.5.sp)
+            Text(valor,  fontSize = 14.sp, color = TextWhite, lineHeight = 20.sp)
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF0B0C10)
+@Preview(showBackground = true, backgroundColor = 0xFF050A18)
 @Composable
 fun DetalhesScreenPreview() {
-    OrbitWatchTheme { DetalhesScreen(eventoId = 1, onNavigateBack = {}) }
+    OrbitWatchTheme {
+        DetalhesScreen(eventoId = 1, onNavigateBack = {}, viewModel = viewModel())
+    }
 }

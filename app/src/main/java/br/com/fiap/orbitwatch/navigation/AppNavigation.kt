@@ -1,19 +1,24 @@
 package br.com.fiap.orbitwatch.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import br.com.fiap.orbitwatch.screens.DetalhesScreen
-import br.com.fiap.orbitwatch.screens.EstatisticasScreen
+import br.com.fiap.orbitwatch.screens.detalhes.DetalhesScreen
+import br.com.fiap.orbitwatch.screens.estatisticas.EstatisticasScreen
 import br.com.fiap.orbitwatch.screens.eventos.EventosScreen
-import br.com.fiap.orbitwatch.screens.HomeScreen
-import br.com.fiap.orbitwatch.screens.SplashScreen
+import br.com.fiap.orbitwatch.screens.home.HomeScreen
+import br.com.fiap.orbitwatch.screens.splash.SplashScreen
+import br.com.fiap.orbitwatch.viewmodel.EventosViewModel
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
+
+    val eventosViewModel: EventosViewModel = viewModel()
+
     NavHost(
         navController    = navController,
         startDestination = NavRoutes.Splash.route
@@ -38,7 +43,8 @@ fun AppNavigation(navController: NavHostController) {
                 onNavigateToDetalhes = { id: Int ->
                     navController.navigate(NavRoutes.Detalhes.createRoute(id))
                 },
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                viewModel      = eventosViewModel
             )
         }
 
@@ -49,7 +55,8 @@ fun AppNavigation(navController: NavHostController) {
             val eventoId = backStackEntry.arguments?.getInt("eventoId") ?: return@composable
             DetalhesScreen(
                 eventoId       = eventoId,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                viewModel      = eventosViewModel
             )
         }
 

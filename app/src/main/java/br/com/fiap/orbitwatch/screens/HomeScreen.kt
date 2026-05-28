@@ -1,4 +1,4 @@
-package br.com.fiap.orbitwatch.screens
+package br.com.fiap.orbitwatch.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,50 +26,50 @@ fun HomeScreen(
     val stats    = EventoRepository.getEstatisticas()
     val total    = stats["total"] as Int
     val criticos = stats["criticos"] as Int
-    val regioes  = stats["regioes"] as Int   // ← substituiu tempMedia
+    val regioes  = stats["regioes"] as Int
 
     Scaffold(
         topBar         = { OrbitTopBar(titulo = "OrbitWatch", mostrarVoltar = false) },
-        containerColor = NasaWhite
+        containerColor = SpaceBlack
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(NasaWhite)
+                .background(SpaceBlack)
                 .padding(padding)
                 .padding(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Label seção
             Text(
                 text          = "PAINEL DE CONTROLE",
                 fontSize      = 10.sp,
                 fontWeight    = FontWeight.Bold,
-                color         = NasaBlue,
+                color         = LightBlue,
                 letterSpacing = 2.sp
             )
+
             Text(
                 text       = "Monitoramento\nAmbiental Global",
                 fontSize   = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color      = NasaTextPrimary,
+                color      = TextWhite,
                 lineHeight  = 32.sp
             )
 
-            // Divider azul
+            // Divider
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(2.dp)
-                    .background(NasaBlue)
+                    .background(AccentBlue)
             )
 
-            // Card de resumo
+            // Card resumo
             Surface(
-                color    = NasaLightGray,
-                shape    = RoundedCornerShape(8.dp),
-                modifier = Modifier.fillMaxWidth(),
-                shadowElevation = 2.dp
+                color           = CardDark,
+                shape           = RoundedCornerShape(12.dp),
+                modifier        = Modifier.fillMaxWidth(),
+                shadowElevation = 4.dp
             ) {
                 Row(
                     modifier              = Modifier
@@ -77,23 +77,11 @@ fun HomeScreen(
                         .padding(vertical = 20.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    ResumoItem(
-                        label = "Eventos",
-                        valor = "$total",
-                        cor   = NasaTextPrimary
-                    )
+                    ResumoItem(label = "Eventos",  valor = "$total",    cor = TextWhite)
                     VerticalDivider(modifier = Modifier.height(48.dp))
-                    ResumoItem(
-                        label = "Críticos",
-                        valor = "$criticos",
-                        cor   = CriticalRed
-                    )
+                    ResumoItem(label = "Críticos", valor = "$criticos", cor = CriticalRed)
                     VerticalDivider(modifier = Modifier.height(48.dp))
-                    ResumoItem(
-                        label = "Regiões",      // ← alterado
-                        valor = "$regioes",
-                        cor   = NasaBlue
-                    )
+                    ResumoItem(label = "Regiões",  valor = "$regioes",  cor = LightBlue)
                 }
             }
 
@@ -103,16 +91,17 @@ fun HomeScreen(
                 text          = "ACESSO RÁPIDO",
                 fontSize      = 10.sp,
                 fontWeight    = FontWeight.Bold,
-                color         = NasaSubtle,
+                color         = TextGray,
                 letterSpacing = 2.sp
             )
 
-            NasaButton(
+            DarkButton(
                 texto   = "MONITORAR EVENTOS",
                 icone   = Icons.Default.Radar,
                 onClick = onNavigateToEventos
             )
-            NasaButton(
+
+            DarkButton(
                 texto    = "VER ESTATÍSTICAS",
                 icone    = Icons.Default.BarChart,
                 onClick  = onNavigateToEstatisticas,
@@ -123,19 +112,15 @@ fun HomeScreen(
 }
 
 @Composable
-private fun ResumoItem(
-    label: String,
-    valor: String,
-    cor: androidx.compose.ui.graphics.Color
-) {
+private fun ResumoItem(label: String, valor: String, cor: androidx.compose.ui.graphics.Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = valor, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = cor)
-        Text(text = label, fontSize = 11.sp, color = NasaSubtle)
+        Text(text = label, fontSize = 11.sp, color = TextGray)
     }
 }
 
 @Composable
-private fun NasaButton(
+private fun DarkButton(
     texto: String,
     icone: ImageVector,
     onClick: () -> Unit,
@@ -145,29 +130,30 @@ private fun NasaButton(
         OutlinedButton(
             onClick  = onClick,
             modifier = Modifier.fillMaxWidth().height(52.dp),
-            shape    = RoundedCornerShape(4.dp),
-            border   = androidx.compose.foundation.BorderStroke(1.5.dp, NasaBlue)
+            shape    = RoundedCornerShape(8.dp),
+            border   = androidx.compose.foundation.BorderStroke(1.5.dp, LightBlue)
         ) {
-            Icon(icone, null, tint = NasaBlue, modifier = Modifier.size(18.dp))
+            Icon(icone, null, tint = LightBlue, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(10.dp))
             Text(texto, fontSize = 13.sp, fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp, color = NasaBlue)
+                letterSpacing = 1.sp, color = LightBlue)
         }
     } else {
         Button(
             onClick  = onClick,
             modifier = Modifier.fillMaxWidth().height(52.dp),
-            colors   = ButtonDefaults.buttonColors(containerColor = NasaBlue),
-            shape    = RoundedCornerShape(4.dp)
+            colors   = ButtonDefaults.buttonColors(containerColor = AccentBlue),
+            shape    = RoundedCornerShape(8.dp)
         ) {
-            Icon(icone, null, modifier = Modifier.size(18.dp))
+            Icon(icone, null, tint = TextWhite, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(10.dp))
-            Text(texto, fontSize = 13.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+            Text(texto, fontSize = 13.sp, fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp, color = TextWhite)
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Preview(showBackground = true, backgroundColor = 0xFF050A18)
 @Composable
 fun HomeScreenPreview() {
     OrbitWatchTheme {

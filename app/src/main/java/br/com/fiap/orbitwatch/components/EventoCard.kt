@@ -15,17 +15,16 @@ import androidx.compose.ui.unit.dp
 import br.com.fiap.orbitwatch.model.EventoAmbiental
 import br.com.fiap.orbitwatch.ui.theme.*
 
-
 @Composable
 fun EventoCard(
     evento: EventoAmbiental,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val bordaColor = when (evento.risco) {
+    val bordaCor = when (evento.risco) {
         "CRÍTICO" -> CriticalRed
         "ALTO"    -> WarningAmber
-        "MÉDIO"   -> OrbitBlue
+        "MÉDIO"   -> AccentBlue
         "BAIXO"   -> SafeGreen
         else      -> Color.Gray
     }
@@ -34,14 +33,8 @@ fun EventoCard(
         onClick   = onClick,
         modifier  = modifier
             .fillMaxWidth()
-            .border(
-                width = 1.5.dp,
-                color = bordaColor.copy(alpha = 0.6f),
-                shape = RoundedCornerShape(12.dp)
-            ),
-        colors    = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
+            .border(1.5.dp, bordaCor.copy(alpha = 0.6f), RoundedCornerShape(12.dp)),
+        colors    = CardDefaults.elevatedCardColors(containerColor = CardDark),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -54,7 +47,7 @@ fun EventoCard(
                 Text(
                     text     = evento.nome,
                     style    = MaterialTheme.typography.titleMedium,
-                    color    = MaterialTheme.colorScheme.onSurface,
+                    color    = TextWhite,
                     modifier = Modifier.weight(1f)
                 )
                 RiscoChip(risco = evento.risco)
@@ -63,18 +56,9 @@ fun EventoCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector        = Icons.Default.LocationOn,
-                    contentDescription = null,
-                    tint               = StarBlue,
-                    modifier           = Modifier.size(14.dp)
-                )
+                Icon(Icons.Default.LocationOn, null, tint = LightBlue, modifier = Modifier.size(14.dp))
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text  = evento.localizacao,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Text(evento.localizacao, style = MaterialTheme.typography.bodyMedium, color = TextGray)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -85,18 +69,10 @@ fun EventoCard(
                 verticalAlignment     = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector        = Icons.Default.Thermostat,
-                        contentDescription = null,
-                        tint               = WarningAmber,
-                        modifier           = Modifier.size(14.dp)
-                    )
+                    Icon(Icons.Default.Thermostat, null, tint = WarningAmber, modifier = Modifier.size(14.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text  = "${"%.1f".format(evento.temperatura)}°C",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Text("${"%.1f".format(evento.temperatura)}°C",
+                        style = MaterialTheme.typography.bodyMedium, color = TextGray)
                 }
 
                 Surface(

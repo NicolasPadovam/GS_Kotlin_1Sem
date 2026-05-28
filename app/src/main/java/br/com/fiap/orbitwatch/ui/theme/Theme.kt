@@ -1,33 +1,32 @@
-// br/com/fiap/orbitwatch/ui/theme/Theme.kt
-
 package br.com.fiap.orbitwatch.ui.theme
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
-private val NasaColorScheme = lightColorScheme(
-    primary             = NasaBlue,
-    onPrimary           = NasaWhite,
-    primaryContainer    = NasaDarkBlue,
-    onPrimaryContainer  = NasaWhite,
-    secondary           = NasaDarkBlue,
-    onSecondary         = NasaWhite,
-    background          = NasaWhite,
-    onBackground        = NasaTextPrimary,
-    surface             = NasaWhite,
-    onSurface           = NasaTextPrimary,
-    surfaceVariant      = NasaLightGray,
-    onSurfaceVariant    = NasaTextSecond,
+private val DarkColorScheme = darkColorScheme(
+    primary             = LightBlue,
+    onPrimary           = SpaceBlack,
+    primaryContainer    = AccentBlue,
+    onPrimaryContainer  = TextWhite,
+    secondary           = AccentBlue,
+    onSecondary         = TextWhite,
+    background          = SpaceBlack,
+    onBackground        = TextWhite,
+    surface             = DeepNavy,
+    onSurface           = TextWhite,
+    surfaceVariant      = CardDark,
+    onSurfaceVariant    = TextGray,
     error               = CriticalRed,
-    onError             = NasaWhite,
-    outline             = NasaSubtle
+    onError             = Color.White,
+    outline             = TextGray
 )
 
 @Composable
 fun OrbitWatchTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = NasaColorScheme,
+        colorScheme = DarkColorScheme,
         typography  = OrbitTypography,
         content     = content
     )

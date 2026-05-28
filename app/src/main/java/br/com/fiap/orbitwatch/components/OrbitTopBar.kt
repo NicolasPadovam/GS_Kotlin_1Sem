@@ -1,8 +1,7 @@
-// components/OrbitTopBar.kt
-
 package br.com.fiap.orbitwatch.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Satellite
 import androidx.compose.material3.*
@@ -24,23 +23,23 @@ fun OrbitTopBar(
             Text(
                 text  = titulo,
                 style = MaterialTheme.typography.titleLarge,
-                color = NasaWhite
+                color = TextWhite
             )
         },
         navigationIcon = {
             if (mostrarVoltar) {
                 IconButton(onClick = onVoltar) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Voltar", tint = NasaBlue)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = LightBlue)
                 }
             }
         },
         actions = {
             acaoIcone?.let {
-                Icon(it, contentDescription = null, tint = NasaBlue)
+                Icon(it, contentDescription = null, tint = LightBlue)
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = NasaDarkGray
+            containerColor = DeepNavy
         )
     )
 }

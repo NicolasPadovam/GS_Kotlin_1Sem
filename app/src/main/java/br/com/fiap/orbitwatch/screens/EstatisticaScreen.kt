@@ -1,4 +1,4 @@
-package br.com.fiap.orbitwatch.screens
+package br.com.fiap.orbitwatch.screens.estatisticas
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,6 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,149 +34,74 @@ fun EstatisticasScreen(
 
     Scaffold(
         topBar = {
-            OrbitTopBar(
-                titulo        = "Estatísticas",
-                mostrarVoltar = true,
-                onVoltar      = onNavigateBack,
-                acaoIcone     = Icons.Default.BarChart
-            )
+            OrbitTopBar(titulo = "Estatísticas", mostrarVoltar = true,
+                onVoltar = onNavigateBack, acaoIcone = Icons.Default.BarChart)
         },
-        containerColor = NasaWhite
+        containerColor = SpaceBlack
     ) { padding ->
 
         if (uiState.isLoading) {
-            Box(
-                modifier         = Modifier.fillMaxSize().padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircularProgressIndicator(color = NasaBlue)
+                    CircularProgressIndicator(color = LightBlue)
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text("Carregando dados...", color = NasaSubtle, fontSize = 13.sp)
+                    Text("Carregando dados...", color = TextGray, fontSize = 13.sp)
                 }
             }
             return@Scaffold
         }
 
         LazyColumn(
-            modifier            = Modifier
-                .fillMaxSize()
-                .background(NasaWhite)
-                .padding(padding),
+            modifier            = Modifier.fillMaxSize().background(SpaceBlack).padding(padding),
             contentPadding      = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // ── Cabeçalho ──
+            // Cabeçalho
             item {
-                Text(
-                    text          = "VISÃO GLOBAL",
-                    fontSize      = 10.sp,
-                    fontWeight    = FontWeight.Bold,
-                    color         = NasaBlue,
-                    letterSpacing = 2.sp
-                )
+                Text("VISÃO GLOBAL", fontSize = 10.sp, fontWeight = FontWeight.Bold,
+                    color = LightBlue, letterSpacing = 2.sp)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text       = "Dados por Evento",
-                    fontSize   = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color      = NasaTextPrimary
-                )
+                Text("Dados por Evento", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = TextWhite)
                 Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .background(NasaBlue)
-                )
+                Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(AccentBlue))
             }
 
-            // ── Cards de métricas globais ──
+            // Métricas globais
             item {
-                Row(
-                    modifier              = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    MetricaCard(
-                        titulo = "Total",
-                        valor  = "${uiState.totalEventos}",
-                        icone  = Icons.Default.Public,
-                        cor    = NasaBlue,
-                        modifier = Modifier.weight(1f)
-                    )
-                    MetricaCard(
-                        titulo = "Críticos",
-                        valor  = "${uiState.eventosCriticos}",
-                        icone  = Icons.Default.Warning,
-                        cor    = CriticalRed,
-                        modifier = Modifier.weight(1f)
-                    )
-                    MetricaCard(
-                        titulo = "Regiões",
-                        valor  = "${uiState.totalRegioes}",
-                        icone  = Icons.Default.Map,
-                        cor    = SafeGreen,
-                        modifier = Modifier.weight(1f)
-                    )
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    MetricaCard("Total",    "${uiState.totalEventos}",   Icons.Default.Public,  LightBlue,   Modifier.weight(1f))
+                    MetricaCard("Críticos", "${uiState.eventosCriticos}", Icons.Default.Warning, CriticalRed, Modifier.weight(1f))
+                    MetricaCard("Regiões",  "${uiState.totalRegioes}",   Icons.Default.Map,     SafeGreen,   Modifier.weight(1f))
                 }
             }
 
-            // ── Índice de criticidade ──
+            // Índice de criticidade
             item {
-                Surface(
-                    color    = NasaLightGray,
-                    shape    = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    shadowElevation = 1.dp
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Row(
-                            modifier              = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                "Índice de Criticidade",
-                                fontWeight = FontWeight.Bold,
-                                color      = NasaTextPrimary,
-                                fontSize   = 14.sp
-                            )
-                            Text(
-                                "${"%.0f".format(uiState.percentualCritico * 100)}%",
-                                fontWeight = FontWeight.Bold,
-                                color      = CriticalRed,
-                                fontSize   = 14.sp
-                            )
+                Surface(color = CardDark, shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth(), shadowElevation = 2.dp) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("Índice de Criticidade", fontWeight = FontWeight.Bold, color = TextWhite, fontSize = 14.sp)
+                            Text("${"%.0f".format(uiState.percentualCritico * 100)}%",
+                                fontWeight = FontWeight.Bold, color = CriticalRed, fontSize = 14.sp)
                         }
                         LinearProgressIndicator(
-                            progress         = { uiState.percentualCritico },
-                            modifier         = Modifier.fillMaxWidth().height(6.dp),
-                            color            = CriticalRed,
-                            trackColor       = NasaCardWhite
+                            progress    = { uiState.percentualCritico },
+                            modifier    = Modifier.fillMaxWidth().height(6.dp),
+                            color       = CriticalRed,
+                            trackColor  = CardDark2
                         )
-                        Text(
-                            "${uiState.eventosCriticos} de ${uiState.totalEventos} eventos em estado crítico",
-                            fontSize = 12.sp,
-                            color    = NasaSubtle
-                        )
+                        Text("${uiState.eventosCriticos} de ${uiState.totalEventos} eventos em estado crítico",
+                            fontSize = 12.sp, color = TextGray)
                     }
                 }
             }
 
-            // ── Separador ──
             item {
-                Text(
-                    text          = "DETALHES POR EVENTO",
-                    fontSize      = 10.sp,
-                    fontWeight    = FontWeight.Bold,
-                    color         = NasaBlue,
-                    letterSpacing = 2.sp
-                )
+                Text("DETALHES POR EVENTO", fontSize = 10.sp, fontWeight = FontWeight.Bold,
+                    color = LightBlue, letterSpacing = 2.sp)
             }
 
-            // ── Card por evento com dados orbitais e climáticos ──
             items(EventoRepository.eventos) { evento ->
                 EventoEstatisticaCard(evento = evento)
             }
@@ -186,146 +113,81 @@ fun EstatisticasScreen(
 
 @Composable
 private fun EventoEstatisticaCard(evento: EventoAmbiental) {
-    // Dados orbitais simulados baseados no evento
-    val satelite       = when (evento.risco) {
+    val satelite = when (evento.risco) {
         "CRÍTICO" -> "GOES-18"
         "ALTO"    -> "Landsat-9"
         "MÉDIO"   -> "Terra/MODIS"
         else      -> "Aqua/MODIS"
     }
-    val precisao       = when (evento.risco) {
-        "CRÍTICO" -> "98.2%"
-        "ALTO"    -> "95.7%"
-        "MÉDIO"   -> "91.3%"
-        else      -> "87.6%"
-    }
-    val umidade        = "${(40..95).random()}%"
-    val vento          = "${(15..180).random()} km/h"
-    val pluviometrico  = "${"%.1f".format((0..250).random().toDouble())} mm"
+    val precisao      = when (evento.risco) { "CRÍTICO" -> "98.2%" "ALTO" -> "95.7%" "MÉDIO" -> "91.3%" else -> "87.6%" }
+    val umidade       = "${(40..95).random()}%"
+    val vento         = "${(15..180).random()} km/h"
+    val chuva         = "${"%.1f".format((0..250).random().toDouble())} mm"
+    val bordaCor      = when (evento.risco) { "CRÍTICO" -> CriticalRed "ALTO" -> WarningAmber "MÉDIO" -> AccentBlue else -> SafeGreen }
 
     Surface(
-        color    = NasaWhite,
-        shape    = RoundedCornerShape(8.dp),
+        color    = CardDark,
+        shape    = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth(),
         shadowElevation = 2.dp,
-        border   = androidx.compose.foundation.BorderStroke(
-            width = 1.dp,
-            color = when (evento.risco) {
-                "CRÍTICO" -> CriticalRed.copy(alpha = 0.4f)
-                "ALTO"    -> WarningAmber.copy(alpha = 0.4f)
-                "MÉDIO"   -> NasaBlue.copy(alpha = 0.3f)
-                else      -> SafeGreen.copy(alpha = 0.3f)
-            }
-        )
+        border   = androidx.compose.foundation.BorderStroke(1.dp, bordaCor.copy(alpha = 0.4f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-
-            // Nome do evento
-            Text(
-                text       = evento.nome,
-                fontSize   = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color      = NasaTextPrimary
-            )
-            Text(
-                text     = evento.localizacao,
-                fontSize = 11.sp,
-                color    = NasaSubtle
-            )
+            Text(evento.nome, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextWhite)
+            Text(evento.localizacao, fontSize = 11.sp, color = TextGray)
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Dados Orbitais
-            SubSectionLabel(label = "DADOS ORBITAIS")
+            Text("DADOS ORBITAIS", fontSize = 9.sp, fontWeight = FontWeight.Bold,
+                color = LightBlue, letterSpacing = 1.5.sp)
             Spacer(modifier = Modifier.height(6.dp))
-            Row(
-                modifier              = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OrbitalChip(icone = Icons.Default.Satellite,    label = "Satélite",  valor = satelite,                modifier = Modifier.weight(1f))
-                OrbitalChip(icone = Icons.Default.AccessTime,   label = "Últ. Leitura", valor = evento.ultimaAtualizacao.takeLast(5), modifier = Modifier.weight(1f))
-                OrbitalChip(icone = Icons.Default.GpsFixed,     label = "Precisão",  valor = precisao,               modifier = Modifier.weight(1f))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                MiniChip(Icons.Default.Satellite,  "Satélite",    satelite,                          Modifier.weight(1f))
+                MiniChip(Icons.Default.AccessTime, "Últ. Leitura", evento.ultimaAtualizacao.takeLast(5), Modifier.weight(1f))
+                MiniChip(Icons.Default.GpsFixed,   "Precisão",    precisao,                          Modifier.weight(1f))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Indicadores Climáticos
-            SubSectionLabel(label = "INDICADORES CLIMÁTICOS")
+            Text("INDICADORES CLIMÁTICOS", fontSize = 9.sp, fontWeight = FontWeight.Bold,
+                color = LightBlue, letterSpacing = 1.5.sp)
             Spacer(modifier = Modifier.height(6.dp))
-            Row(
-                modifier              = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OrbitalChip(icone = Icons.Default.WaterDrop,    label = "Umidade",   valor = umidade,               modifier = Modifier.weight(1f))
-                OrbitalChip(icone = Icons.Default.Air,          label = "Vento",     valor = vento,                 modifier = Modifier.weight(1f))
-                OrbitalChip(icone = Icons.Default.Umbrella,     label = "Chuva",     valor = pluviometrico,         modifier = Modifier.weight(1f))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                MiniChip(Icons.Default.WaterDrop, "Umidade", umidade, Modifier.weight(1f))
+                MiniChip(Icons.Default.Air,       "Vento",   vento,   Modifier.weight(1f))
+                MiniChip(Icons.Default.Umbrella,  "Chuva",   chuva,   Modifier.weight(1f))
             }
         }
     }
 }
 
 @Composable
-private fun SubSectionLabel(label: String) {
-    Text(
-        text          = label,
-        fontSize      = 9.sp,
-        fontWeight    = FontWeight.Bold,
-        color         = NasaBlue,
-        letterSpacing = 1.5.sp
-    )
-}
-
-@Composable
-private fun OrbitalChip(
-    icone: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
-    valor: String,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        color    = NasaLightGray,
-        shape    = RoundedCornerShape(6.dp),
-        modifier = modifier
-    ) {
-        Column(
-            modifier            = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(icone, null, tint = NasaBlue, modifier = Modifier.size(14.dp))
+private fun MiniChip(icone: ImageVector, label: String, valor: String, modifier: Modifier = Modifier) {
+    Surface(color = CardDark2, shape = RoundedCornerShape(6.dp), modifier = modifier) {
+        Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(icone, null, tint = LightBlue, modifier = Modifier.size(14.dp))
             Spacer(modifier = Modifier.height(3.dp))
-            Text(valor, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = NasaTextPrimary)
-            Text(label, fontSize = 9.sp, color = NasaSubtle)
+            Text(valor, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextWhite)
+            Text(label, fontSize = 9.sp, color = TextGray)
         }
     }
 }
 
 @Composable
-private fun MetricaCard(
-    titulo: String,
-    valor: String,
-    icone: androidx.compose.ui.graphics.vector.ImageVector,
-    cor: androidx.compose.ui.graphics.Color,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        color    = NasaLightGray,
-        shape    = RoundedCornerShape(8.dp),
-        modifier = modifier,
-        shadowElevation = 1.dp
-    ) {
-        Column(
-            modifier            = Modifier.padding(12.dp),
+private fun MetricaCard(titulo: String, valor: String, icone: ImageVector, cor: Color, modifier: Modifier) {
+    Surface(color = CardDark, shape = RoundedCornerShape(12.dp),
+        modifier = modifier, shadowElevation = 2.dp) {
+        Column(modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
+            verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Icon(icone, null, tint = cor, modifier = Modifier.size(22.dp))
             Text(valor, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = cor)
-            Text(titulo, fontSize = 10.sp, color = NasaSubtle)
+            Text(titulo, fontSize = 10.sp, color = TextGray)
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Preview(showBackground = true, backgroundColor = 0xFF050A18)
 @Composable
 fun EstatisticasScreenPreview() {
     OrbitWatchTheme { EstatisticasScreen(onNavigateBack = {}) }

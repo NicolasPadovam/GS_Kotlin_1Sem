@@ -1,5 +1,3 @@
-// br/com/fiap/orbitwatch/screens/eventos/EventosScreen.kt
-
 package br.com.fiap.orbitwatch.screens.eventos
 
 import androidx.compose.animation.AnimatedVisibility
@@ -28,21 +26,20 @@ import br.com.fiap.orbitwatch.components.OrbitTopBar
 import br.com.fiap.orbitwatch.ui.theme.*
 import br.com.fiap.orbitwatch.viewmodel.EventosViewModel
 
-// "NOTIFICADOS" fica no final da lista de filtros
 private val filtros = listOf("TODOS", "CRÍTICO", "ALTO", "MÉDIO", "BAIXO", "NOTIFICADOS")
 
 @Composable
 fun EventosScreen(
     onNavigateToDetalhes: (Int) -> Unit,
     onNavigateBack: () -> Unit,
-    viewModel: EventosViewModel = viewModel()
+    viewModel: EventosViewModel
 ) {
-    val eventosFiltrados    by viewModel.eventosFiltrados.collectAsStateWithLifecycle()
-    val filtroAtual         by viewModel.filtroRisco.collectAsStateWithLifecycle()
-    val isLoading           by viewModel.isLoading.collectAsStateWithLifecycle()
-    val showSnackbar        by viewModel.showSnackbar.collectAsStateWithLifecycle()
-    val eventosNotificados  by viewModel.eventosNotificados.collectAsStateWithLifecycle()
-    val snackbarHostState   = remember { SnackbarHostState() }
+    val eventosFiltrados   by viewModel.eventosFiltrados.collectAsStateWithLifecycle()
+    val filtroAtual        by viewModel.filtroRisco.collectAsStateWithLifecycle()
+    val isLoading          by viewModel.isLoading.collectAsStateWithLifecycle()
+    val showSnackbar       by viewModel.showSnackbar.collectAsStateWithLifecycle()
+    val eventosNotificados by viewModel.eventosNotificados.collectAsStateWithLifecycle()
+    val snackbarHostState  = remember { SnackbarHostState() }
 
     LaunchedEffect(showSnackbar) {
         if (showSnackbar) {
@@ -62,30 +59,30 @@ fun EventosScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick        = { viewModel.atualizarDados() },
-                containerColor = NasaBlue
+                containerColor = AccentBlue
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
-                        color       = NasaWhite,
+                        color       = TextWhite,
                         modifier    = Modifier.size(24.dp),
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Icon(Icons.Default.Refresh, contentDescription = "Atualizar", tint = NasaWhite)
+                    Icon(Icons.Default.Refresh, contentDescription = "Atualizar", tint = TextWhite)
                 }
             }
         },
         snackbarHost   = { SnackbarHost(snackbarHostState) },
-        containerColor = NasaWhite
+        containerColor = SpaceBlack
     ) { padding ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(NasaWhite)
+                .background(SpaceBlack)
                 .padding(padding)
         ) {
-            // Chips de filtro em scroll horizontal
+            // Chips de filtro
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -95,7 +92,7 @@ fun EventosScreen(
             ) {
                 filtros.forEach { filtro ->
                     val isNotificados = filtro == "NOTIFICADOS"
-                    val badge         = if (isNotificados && eventosNotificados.isNotEmpty())
+                    val badge = if (isNotificados && eventosNotificados.isNotEmpty())
                         " (${eventosNotificados.size})" else ""
 
                     FilterChip(
@@ -105,16 +102,14 @@ fun EventosScreen(
                             Text(
                                 text       = "$filtro$badge",
                                 fontSize   = 12.sp,
-                                fontWeight = if (isNotificados) FontWeight.Bold else FontWeight.Normal,
-                                color      = if (filtroAtual == filtro) NasaWhite
-                                else if (isNotificados && eventosNotificados.isNotEmpty()) CriticalRed
-                                else NasaTextPrimary
+                                fontWeight = if (isNotificados) FontWeight.Bold else FontWeight.Normal
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor   = if (isNotificados) CriticalRed else NasaBlue,
-                            selectedLabelColor       = NasaWhite,
-                            containerColor           = NasaLightGray,
+                            selectedContainerColor = if (isNotificados) CriticalRed else AccentBlue,
+                            selectedLabelColor     = TextWhite,
+                            containerColor         = CardDark,
+                            labelColor             = TextGray
                         )
                     )
                 }
@@ -135,7 +130,7 @@ fun EventosScreen(
                             text     = if (filtroAtual == "NOTIFICADOS")
                                 "Nenhuma notificação enviada ainda"
                             else "Nenhum evento encontrado",
-                            color    = NasaSubtle,
+                            color    = TextGray,
                             fontSize = 14.sp
                         )
                     }
@@ -159,10 +154,14 @@ fun EventosScreen(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Preview(showBackground = true, backgroundColor = 0xFF050A18)
 @Composable
 fun EventosScreenPreview() {
     OrbitWatchTheme {
-        EventosScreen(onNavigateToDetalhes = {}, onNavigateBack = {})
+        EventosScreen(
+            onNavigateToDetalhes = {},
+            onNavigateBack       = {},
+            viewModel            = viewModel()
+        )
     }
 }

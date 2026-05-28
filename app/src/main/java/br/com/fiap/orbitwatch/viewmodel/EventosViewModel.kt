@@ -1,5 +1,3 @@
-// br/com/fiap/orbitwatch/viewmodel/EventosViewModel.kt
-
 package br.com.fiap.orbitwatch.viewmodel
 
 import androidx.lifecycle.ViewModel
@@ -24,15 +22,14 @@ class EventosViewModel : ViewModel() {
     private val _showSnackbar = MutableStateFlow(false)
     val showSnackbar: StateFlow<Boolean> = _showSnackbar.asStateFlow()
 
-    // Lista de IDs de eventos notificados à Defesa Civil
     private val _eventosNotificados = MutableStateFlow<List<EventoAmbiental>>(emptyList())
     val eventosNotificados: StateFlow<List<EventoAmbiental>> = _eventosNotificados.asStateFlow()
 
     val eventosFiltrados: StateFlow<List<EventoAmbiental>> =
-        combine(_eventos, _filtroRisco) { lista, filtro ->
+        combine(_eventos, _filtroRisco, _eventosNotificados) { lista, filtro, notificados ->
             when (filtro) {
                 "TODOS"       -> lista
-                "NOTIFICADOS" -> _eventosNotificados.value   // ← novo filtro
+                "NOTIFICADOS" -> notificados
                 else          -> lista.filter { it.risco == filtro }
             }
         }.stateIn(
@@ -49,7 +46,7 @@ class EventosViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             delay(1_500L)
-            _eventos.value = EventoRepository.eventos.shuffled()
+            _eventos.value   = EventoRepository.eventos.shuffled()
             _isLoading.value = false
             _showSnackbar.value = true
         }
@@ -64,7 +61,6 @@ class EventosViewModel : ViewModel() {
         if (_eventosNotificados.value.none { it.id == id }) {
             _eventosNotificados.value = _eventosNotificados.value + evento
         }
-        // Atualiza status do evento para MONITORADO
         _eventos.value = _eventos.value.map {
             if (it.id == id) it.copy(status = "MONITORADO") else it
         }

@@ -10,29 +10,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.fiap.orbitwatch.ui.theme.CriticalRed
-import br.com.fiap.orbitwatch.ui.theme.OrbitBlue
-import br.com.fiap.orbitwatch.ui.theme.SafeGreen
-import br.com.fiap.orbitwatch.ui.theme.WarningAmber
+import br.com.fiap.orbitwatch.ui.theme.*
 
 @Composable
 fun RiscoChip(risco: String, modifier: Modifier = Modifier) {
-    val (bgColor, label) = when (risco) {
-        "CRÍTICO"  -> Pair(CriticalRed, "CRÍTICO")
-        "ALTO"     -> Pair(WarningAmber, "ALTO")
-        "MÉDIO"    -> Pair(OrbitBlue, "MÉDIO")
-        "BAIXO"    -> Pair(SafeGreen, "BAIXO")
-        else       -> Pair(Color.Gray, risco)
+    val cor = when (risco) {
+        "CRÍTICO" -> CriticalRed
+        "ALTO"    -> WarningAmber
+        "MÉDIO"   -> AccentBlue
+        "BAIXO"   -> SafeGreen
+        else      -> Color.Gray
     }
-
     Surface(
-        color  = bgColor.copy(alpha = 0.20f),
-        shape  = RoundedCornerShape(20.dp),
+        color    = cor.copy(alpha = 0.20f),
+        shape    = RoundedCornerShape(20.dp),
         modifier = modifier
     ) {
         Text(
-            text  = label,
-            color = bgColor,
+            text       = risco,
+            color      = cor,
             fontSize   = 10.sp,
             fontWeight = FontWeight.Bold,
             modifier   = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
